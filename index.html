@@ -657,11 +657,26 @@
       font-size: 18px;
     }
 
+    .plan-head-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      white-space: nowrap;
+    }
+
     .clear {
       color: var(--muted);
       background: transparent;
       padding: 6px 0;
       font-size: 13px;
+    }
+
+    .home-link {
+      color: var(--green);
+      background: transparent;
+      padding: 6px 0;
+      font-size: 13px;
+      font-weight: 800;
     }
 
     .notice {
@@ -1065,7 +1080,10 @@
         <aside class="panel plan plan-full hidden" id="planPanel">
           <div class="plan-head">
             <h2>我的课表</h2>
-            <button class="clear" id="clearPlan">全部移除</button>
+            <div class="plan-head-actions">
+              <button class="home-link" id="backHomeFromPlan" type="button">返回首页</button>
+              <button class="clear" id="clearPlan" type="button">全部移除</button>
+            </div>
           </div>
           <p class="notice" id="planNotice">还没有选择课程。完成任一路径后，课程会自动加入这里。</p>
           <div class="selected-list" id="selectedList"></div>
@@ -1750,6 +1768,13 @@
       state.selected.clear();
       state.showResult = false;
       render();
+    });
+
+    $("#backHomeFromPlan").addEventListener("click", () => {
+      state.page = "start";
+      resetRoute("");
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
     $("#generateResult").addEventListener("click", () => {
