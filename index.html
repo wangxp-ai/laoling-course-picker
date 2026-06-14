@@ -114,10 +114,112 @@
       width: 100%;
       margin: 0 auto;
       padding: 22px 20px 28px;
+    }
+
+    .start-page {
+      min-height: calc(100vh - 70px);
       display: grid;
-      grid-template-columns: 300px minmax(0, 1fr) 330px;
+      place-items: center;
+    }
+
+    .start-card {
+      width: min(100%, 520px);
+      padding: 28px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .start-card h2 {
+      margin: 0 0 10px;
+      font-size: 28px;
+      line-height: 1.25;
+    }
+
+    .start-card p {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .entry-options {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .entry-option {
+      width: 100%;
+      min-height: 66px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfa;
+      color: var(--ink);
+      text-align: left;
+      font-weight: 800;
+      transition: .16s ease;
+    }
+
+    .entry-option::before {
+      content: "";
+      width: 20px;
+      height: 20px;
+      border: 2px solid #b9c8b3;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: inset 0 0 0 5px #fff;
+    }
+
+    .entry-option:hover {
+      border-color: #b7c8b1;
+      background: #f3f8f0;
+    }
+
+    .entry-option.active {
+      border-color: var(--green);
+      background: var(--green-2);
+      color: var(--ink);
+      box-shadow: 0 10px 24px rgba(79, 143, 69, .14);
+    }
+
+    .entry-option.active::before {
+      border-color: var(--green);
+      background: var(--green);
+    }
+
+    .next-button {
+      width: 100%;
+      min-height: 48px;
+      border-radius: 8px;
+      background: var(--green);
+      color: #fff;
+      font-weight: 900;
+      font-size: 16px;
+      transition: .16s ease;
+    }
+
+    .next-button:disabled {
+      cursor: not-allowed;
+      background: #dfe6da;
+      color: #7c897f;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
       gap: 18px;
       align-items: start;
+    }
+
+    .hidden {
+      display: none !important;
     }
 
     .panel {
@@ -167,21 +269,6 @@
       line-height: 1.45;
     }
 
-    .search {
-      width: 100%;
-      height: 44px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 0 12px;
-      outline: none;
-      background: #fbfcfa;
-    }
-
-    .search:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(79, 143, 69, .16);
-    }
-
     .choice-grid {
       display: flex;
       flex-wrap: wrap;
@@ -217,6 +304,127 @@
       background: #eef2eb;
       color: var(--ink);
       font-weight: 700;
+    }
+
+    .wizard {
+      min-height: calc(100vh - 118px);
+      padding: 24px;
+      display: grid;
+      align-content: start;
+      gap: 20px;
+    }
+
+    .wizard-head {
+      display: grid;
+      gap: 8px;
+      max-width: 760px;
+    }
+
+    .wizard-step {
+      color: var(--green);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .wizard-head h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.25;
+    }
+
+    .wizard-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .wizard-section {
+      display: grid;
+      gap: 12px;
+    }
+
+    .wizard-section h3 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+    }
+
+    .option-card {
+      min-height: 58px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfa;
+      color: var(--ink);
+      text-align: left;
+      display: grid;
+      gap: 5px;
+      transition: .16s ease;
+    }
+
+    .option-card:hover {
+      border-color: #b7c8b1;
+      background: #f3f8f0;
+    }
+
+    .option-card.active {
+      border-color: var(--green);
+      background: var(--green-2);
+      box-shadow: 0 10px 22px rgba(79, 143, 69, .14);
+    }
+
+    .option-card strong {
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .option-card span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .course-option-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .wizard-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .wizard-btn {
+      min-height: 46px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 900;
+      background: #eef2eb;
+      color: var(--ink);
+    }
+
+    .wizard-btn.primary {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .wizard-btn:disabled {
+      cursor: not-allowed;
+      background: #dfe6da;
+      color: #7c897f;
+    }
+
+    .plan-page {
+      display: grid;
+      gap: 18px;
     }
 
     .content {
@@ -691,13 +899,12 @@
     }
 
     @media (max-width: 1080px) {
-      main {
-        grid-template-columns: 280px minmax(0, 1fr);
+      .workspace {
+        grid-template-columns: 1fr;
       }
 
       .plan {
         position: static;
-        grid-column: 1 / -1;
         max-height: none;
       }
     }
@@ -714,8 +921,37 @@
       }
 
       main {
-        grid-template-columns: 1fr;
         padding: 14px 14px 88px;
+      }
+
+      .start-page {
+        min-height: calc(100vh - 168px);
+      }
+
+      .start-card {
+        padding: 22px;
+      }
+
+      .start-card h2 {
+        font-size: 24px;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .wizard {
+        min-height: auto;
+        padding: 18px;
+      }
+
+      .wizard-head h2 {
+        font-size: 23px;
+      }
+
+      .option-grid,
+      .course-option-grid {
+        grid-template-columns: 1fr;
       }
 
       .filters {
@@ -774,7 +1010,7 @@
           <div class="brand-mark">选</div>
           <div>
             <h1>乐龄学院选课助手</h1>
-            <p>2026年春季课表 Demo · 先选兴趣，再看时间冲突</p>
+            <p>2026年春季课表 Demo · 选择入口，再继续选课</p>
           </div>
         </div>
         <div class="summary">
@@ -785,89 +1021,45 @@
     </header>
 
     <main>
-      <aside class="panel filters" id="filtersPanel">
-        <h2 class="section-title">筛选课程</h2>
-        <p class="hint">先选有空的星期和喜欢的兴趣，右侧会自动生成你的选课清单。</p>
-
-        <div class="field">
-          <label for="keyword">搜索课程或老师</label>
-          <input class="search" id="keyword" placeholder="例如：营养、AI、钢琴、周密" />
-        </div>
-
-        <div class="field">
-          <label>我有空的星期</label>
-          <div class="choice-grid" id="weekdayFilters"></div>
-        </div>
-
-        <div class="field">
-          <label>时间段</label>
-          <div class="choice-grid" id="periodFilters"></div>
-        </div>
-
-        <div class="field">
-          <label>兴趣大类</label>
-          <p class="field-note">先选大方向，下面的具体兴趣会自动变少。</p>
-          <div class="choice-grid" id="categoryFilters"></div>
-        </div>
-
-        <button class="reset" id="resetFilters">清空筛选</button>
-      </aside>
-
-      <section class="content" id="courseSection">
-        <div class="panel guide">
-          <div>
-            <h2>把密密麻麻的课表，变成一份自己的周安排</h2>
-            <p>兴趣是前台入口，时间段帮你快速缩小范围。加入清单后，系统会提醒同一天同时间段是否冲突。</p>
+      <section class="start-page" id="startPage">
+        <div class="start-card">
+          <h2>你想怎样选课？</h2>
+          <p>先选择一个入口，下一页再继续细选课程。三个选项只能选择一个。</p>
+          <div class="entry-options" id="entryOptions" role="radiogroup" aria-label="选课方式">
+            <button class="entry-option" type="button" role="radio" aria-checked="false" data-mode="time">按时间选课</button>
+            <button class="entry-option" type="button" role="radio" aria-checked="false" data-mode="interest">按兴趣选课</button>
+            <button class="entry-option" type="button" role="radio" aria-checked="false" data-mode="teacher">按老师选课</button>
           </div>
-          <div class="count-box">
-            <strong id="courseTotal">0</strong>
-            <span>春季课程</span>
-          </div>
+          <button class="next-button" id="nextPage" type="button" disabled>下一页</button>
         </div>
-
-        <div class="panel interest-strip">
-          <h2 class="section-title">按具体兴趣选课</h2>
-          <div class="choice-grid" id="interestFilters"></div>
-        </div>
-
-        <div class="courses" id="courseList"></div>
       </section>
 
-      <aside class="panel plan" id="planPanel">
-        <div class="plan-head">
-          <h2>我的选课清单</h2>
-          <button class="clear" id="clearPlan">全部移除</button>
-        </div>
-        <p class="notice" id="planNotice">还没有选择课程。你可以从中间的课程卡片加入清单。</p>
-        <div class="selected-list" id="selectedList"></div>
-        <div class="result-actions">
-          <button class="result-btn" id="generateResult">生成结果</button>
-          <button class="result-btn secondary" id="copyResult">复制文字</button>
-        </div>
-        <div class="result-box" id="resultBox"></div>
-        <h2 class="section-title">我的周课表</h2>
-        <div class="week" id="weekPlan"></div>
-      </aside>
+      <div class="workspace hidden" id="workspace">
+        <section class="panel wizard" id="wizardPanel" aria-live="polite"></section>
+
+        <aside class="panel plan" id="planPanel">
+          <div class="plan-head">
+            <h2>我的课表</h2>
+            <button class="clear" id="clearPlan">全部移除</button>
+          </div>
+          <p class="notice" id="planNotice">还没有选择课程。完成任一路径后，课程会自动加入这里。</p>
+          <div class="selected-list" id="selectedList"></div>
+          <div class="result-actions">
+            <button class="result-btn" id="generateResult">生成结果</button>
+            <button class="result-btn secondary" id="copyResult">复制文字</button>
+          </div>
+          <div class="result-box" id="resultBox"></div>
+          <h2 class="section-title">我的周课表</h2>
+          <div class="week" id="weekPlan"></div>
+        </aside>
+      </div>
     </main>
 
-    <nav class="mobile-nav" aria-label="手机快捷导航">
-      <button data-target="filtersPanel">改条件</button>
-      <button class="primary" data-target="courseSection">看课程 <span id="mobileCourseCount">0</span></button>
-      <button data-target="planPanel">看课表 <span id="mobileSelectedCount">0</span></button>
+    <nav class="mobile-nav hidden" aria-label="手机快捷导航">
+      <button data-target="wizardPanel">继续选课</button>
+      <button class="primary" data-target="planPanel">看课表 <span id="mobileSelectedCount">0</span></button>
+      <button data-target="startPage">回首页</button>
     </nav>
-
-    <div class="course-modal" id="courseModal" aria-hidden="true">
-      <div class="course-modal-sheet" role="dialog" aria-modal="true" aria-labelledby="courseModalTitle">
-        <div class="course-modal-head">
-          <div>
-            <h2 id="courseModalTitle">可选课程</h2>
-            <p id="courseModalHint">点击课程名称查看详情，再决定是否加入。</p>
-          </div>
-          <button class="modal-close" id="closeCourseModal" aria-label="关闭课程列表">×</button>
-        </div>
-        <div class="modal-course-list" id="modalCourseList"></div>
-      </div>
-    </div>
   </div>
 
   <script>
@@ -975,85 +1167,25 @@
     );
 
     const state = {
-      keyword: "",
-      weekdays: new Set(),
-      periods: new Set(),
-      categories: new Set(),
-      interests: new Set(),
+      page: "start",
+      entryMode: "",
+      routeStep: 0,
+      timeDay: "",
+      timePeriod: "",
+      department: "",
+      interest: "",
+      teacher: "",
+      chosenCourseId: null,
       selected: new Set(),
-      showResult: false,
-      jumpTarget: ""
+      showResult: false
     };
 
     const $ = selector => document.querySelector(selector);
-    let searchJumpTimer = 0;
-
-    function isMobileViewport() {
-      return window.matchMedia("(max-width: 760px)").matches;
-    }
 
     function jumpTo(targetId) {
       const target = document.getElementById(targetId);
       if (!target) return;
       target.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    function queueMobileJump(targetId = "courseSection") {
-      if (isMobileViewport()) state.jumpTarget = targetId;
-    }
-
-    function performQueuedJump() {
-      if (!state.jumpTarget) return;
-      const targetId = state.jumpTarget;
-      state.jumpTarget = "";
-      window.setTimeout(() => jumpTo(targetId), 80);
-    }
-
-    function describeActiveFilters() {
-      const parts = [];
-      if (state.weekdays.size) parts.push([...state.weekdays].map(day => `周${day}`).join("、"));
-      if (state.periods.size) parts.push([...state.periods].join("、"));
-      if (state.categories.size) parts.push([...state.categories].join("、"));
-      if (state.interests.size) parts.push([...state.interests].join("、"));
-      return parts.length ? parts.join(" · ") : "全部课程";
-    }
-
-    function openCourseModal(title = "可选课程") {
-      if (!isMobileViewport()) return;
-      const modal = $("#courseModal");
-      const list = $("#modalCourseList");
-      const visible = filteredCourses();
-      $("#courseModalTitle").textContent = title;
-      $("#courseModalHint").textContent = `${describeActiveFilters()}，共 ${visible.length} 门。点击课程名称查看详情，再决定是否加入。`;
-      list.innerHTML = visible.length ? visible.map(course => `
-        <button class="modal-course" data-id="${course.id}">
-          <strong>${course.name}</strong>
-          <span>周${course.weekday} ${course.time} · ${course.classroom}</span>
-          <span>${course.teacher} · ${course.interest}</span>
-        </button>
-      `).join("") : `<div class="empty">没有找到符合条件的课程，可以关闭窗口后减少筛选条件。</div>`;
-      list.querySelectorAll(".modal-course").forEach(button => {
-        button.addEventListener("click", () => {
-          closeCourseModal();
-          focusCourse(Number(button.dataset.id));
-        });
-      });
-      modal.classList.add("open");
-      modal.setAttribute("aria-hidden", "false");
-    }
-
-    function closeCourseModal() {
-      const modal = $("#courseModal");
-      modal.classList.remove("open");
-      modal.setAttribute("aria-hidden", "true");
-    }
-
-    function focusCourse(courseId) {
-      const card = document.querySelector(`[data-course-id="${courseId}"]`);
-      if (!card) return;
-      card.scrollIntoView({ behavior: "smooth", block: "center" });
-      card.classList.add("focused");
-      window.setTimeout(() => card.classList.remove("focused"), 1800);
     }
 
     function toMinutes(value) {
@@ -1087,8 +1219,16 @@
       return courses.filter(course => state.selected.has(course.id));
     }
 
+    function selectedCourse() {
+      return courses.find(course => course.id === state.chosenCourseId);
+    }
+
     function sortedUnique(key) {
       return [...new Set(courses.map(course => course[key]))].sort((a, b) => a.localeCompare(b, "zh-Hans-CN"));
+    }
+
+    function uniqueInOrder(items) {
+      return [...new Set(items.filter(Boolean))];
     }
 
     function sortCourses(items) {
@@ -1099,102 +1239,282 @@
       });
     }
 
-    function visibleInterests() {
-      const all = sortedUnique("interest");
-      if (!state.categories.size) return all;
-      return all.filter(interest => state.categories.has(categoryByInterest.get(interest)));
+    function teacherNames(course) {
+      return course.teacher
+        .replace(/（.*?）/g, "")
+        .split("、")
+        .map(name => name.trim())
+        .filter(Boolean);
     }
 
-    function getAlternatives(course, limit = 3) {
-      const selected = getSelectedCourses();
-      const sameInterest = courses.filter(item => item.id !== course.id && item.interest === course.interest);
-      const sameCategory = courses.filter(item => (
-        item.id !== course.id &&
-        item.interest !== course.interest &&
-        categoryByInterest.get(item.interest) === categoryByInterest.get(course.interest)
-      ));
-      return sortCourses([...sameInterest, ...sameCategory])
-        .filter(item => !state.selected.has(item.id) && !hasConflict(item, selected))
-        .slice(0, limit);
+    function departments() {
+      return uniqueInOrder(courses.map(course => course.department));
     }
 
-    function makeChoices(container, items, activeSet, onClick) {
-      container.innerHTML = "";
-      items.forEach(item => {
-        const key = typeof item === "string" ? item : item.key;
-        const label = typeof item === "string" ? item : item.label;
-        const button = document.createElement("button");
-        button.className = `choice ${activeSet.has(key) ? "active" : ""}`;
-        button.textContent = label;
-        button.addEventListener("click", () => onClick(key));
-        container.appendChild(button);
-      });
+    function interestsByDepartment(department) {
+      return uniqueInOrder(courses.filter(course => course.department === department).map(course => course.interest));
     }
 
-    function toggle(set, key) {
-      if (set.has(key)) set.delete(key);
-      else set.add(key);
-      queueMobileJump("courseSection");
+    function teachersByDepartment(department) {
+      return uniqueInOrder(courses
+        .filter(course => course.department === department)
+        .flatMap(course => teacherNames(course)))
+        .sort((a, b) => a.localeCompare(b, "zh-Hans-CN"));
+    }
+
+    function courseHasTeacher(course, teacher) {
+      return teacherNames(course).includes(teacher);
+    }
+
+    function timeFilteredCourses() {
+      const period = periods.find(item => item.key === state.timePeriod);
+      if (!state.timeDay || !period) return [];
+      return sortCourses(courses.filter(course => (
+        course.weekday === state.timeDay && overlaps(timeRange(course), slotRange(period))
+      )));
+    }
+
+    function interestFilteredCourses() {
+      if (!state.department || !state.interest) return [];
+      return sortCourses(courses.filter(course => (
+        course.department === state.department && course.interest === state.interest
+      )));
+    }
+
+    function teacherFilteredCourses() {
+      if (!state.department || !state.teacher) return [];
+      return sortCourses(courses.filter(course => (
+        course.department === state.department && courseHasTeacher(course, state.teacher)
+      )));
+    }
+
+    function addChosenCourseToPlan() {
+      const course = selectedCourse();
+      if (!course) return;
+      state.selected.add(course.id);
+      state.showResult = false;
+      state.page = "plan";
+      window.scrollTo({ top: 0, behavior: "smooth" });
       render();
     }
 
-    function filteredCourses() {
-      return sortCourses(courses.filter(course => {
-        const availableMatch = state.selected.has(course.id) || !hasConflict(course);
-        const text = `${course.name}${course.teacher}${course.interest}${course.classroom}`.toLowerCase();
-        const keywordMatch = !state.keyword || text.includes(state.keyword.toLowerCase());
-        const weekdayMatch = !state.weekdays.size || state.weekdays.has(course.weekday);
-        const periodMatch = !state.periods.size || periods.some(period => (
-          state.periods.has(period.key) && overlaps(timeRange(course), slotRange(period))
-        ));
-        const categoryMatch = !state.categories.size || state.categories.has(categoryByInterest.get(course.interest));
-        const interestMatch = !state.interests.size || state.interests.has(course.interest);
-        return availableMatch && keywordMatch && weekdayMatch && periodMatch && categoryMatch && interestMatch;
+    function resetRoute(mode = state.entryMode) {
+      state.entryMode = mode;
+      state.routeStep = 0;
+      state.timeDay = "";
+      state.timePeriod = "";
+      state.department = "";
+      state.interest = "";
+      state.teacher = "";
+      state.chosenCourseId = null;
+    }
+
+    function optionButton({ key, title, detail, active, onClick }) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `option-card ${active ? "active" : ""}`;
+      button.setAttribute("role", "radio");
+      button.setAttribute("aria-checked", String(active));
+      button.innerHTML = `<strong>${title}</strong>${detail ? `<span>${detail}</span>` : ""}`;
+      button.addEventListener("click", () => onClick(key));
+      return button;
+    }
+
+    function renderOptionGrid(container, items, selectedKey, onClick, courseMode = false) {
+      container.innerHTML = "";
+      container.className = `option-grid ${courseMode ? "course-option-grid" : ""}`;
+      items.forEach(item => {
+        const key = typeof item === "string" ? item : item.key;
+        const title = typeof item === "string" ? item : item.title;
+        const detail = typeof item === "string" ? "" : item.detail;
+        container.appendChild(optionButton({
+          key,
+          title,
+          detail,
+          active: String(selectedKey) === String(key),
+          onClick
+        }));
+      });
+    }
+
+    function courseOptions(items) {
+      return items.map(course => ({
+        key: course.id,
+        title: course.name,
+        detail: `周${course.weekday} ${course.time} · ${course.teacher} · ${course.classroom}`
       }));
     }
 
-    function renderCourses() {
-      const list = $("#courseList");
-      const visible = filteredCourses();
-      $("#visibleCount").textContent = visible.length;
-      $("#mobileCourseCount").textContent = visible.length;
+    function renderSection(title, id) {
+      return `
+        <div class="wizard-section">
+          <h3>${title}</h3>
+          <div id="${id}" role="radiogroup" aria-label="${title}"></div>
+        </div>
+      `;
+    }
 
-      if (!visible.length) {
-        list.innerHTML = `<div class="panel empty">没有找到符合条件的课程，可以减少筛选条件再试试。</div>`;
+    function renderWizardShell({ stepLabel, title, hint, body, nextDisabled = false, nextText = "下一页" }) {
+      $("#wizardPanel").innerHTML = `
+        <div class="wizard-head">
+          <div class="wizard-step">${stepLabel}</div>
+          <h2>${title}</h2>
+          <p>${hint}</p>
+        </div>
+        ${body}
+        <div class="wizard-nav">
+          <button class="wizard-btn" id="wizardBack" type="button">返回上一页</button>
+          <button class="wizard-btn primary" id="wizardNext" type="button" ${nextDisabled ? "disabled" : ""}>${nextText}</button>
+        </div>
+      `;
+      $("#wizardBack").addEventListener("click", goBack);
+      $("#wizardNext").addEventListener("click", goNext);
+    }
+
+    function renderTimeWizard() {
+      if (state.routeStep === 0) {
+        renderWizardShell({
+          stepLabel: "按时间选课",
+          title: "选择日期和时间段",
+          hint: "日期只能选一个，时间段也只能选一个。选好后进入下一页查看这个时间段的全部课程。",
+          body: renderSection("按日期选择", "weekdayChoices") + renderSection("按时间段选择", "periodChoices"),
+          nextDisabled: !state.timeDay || !state.timePeriod
+        });
+        renderOptionGrid($("#weekdayChoices"), weekdays.map(day => ({ key: day, title: `周${day}` })), state.timeDay, key => {
+          state.timeDay = key;
+          render();
+        });
+        renderOptionGrid($("#periodChoices"), periods.map(period => ({ key: period.key, title: period.label })), state.timePeriod, key => {
+          state.timePeriod = key;
+          render();
+        });
         return;
       }
 
-      list.innerHTML = "";
-      visible.forEach(course => {
-        const selected = state.selected.has(course.id);
-        const card = document.createElement("article");
-        card.className = "course";
-        card.dataset.courseId = course.id;
-        card.innerHTML = `
-          <div class="course-head">
-            <h3>${course.name}</h3>
-            <span class="tag">${course.interest}</span>
-          </div>
-          <div class="meta">
-            <div><strong>时间</strong> 周${course.weekday} ${course.time}</div>
-            <div><strong>教师</strong> ${course.teacher}</div>
-            <div><strong>教室</strong> ${course.classroom}</div>
-          </div>
-          <div class="actions">
-            <button class="add ${selected ? "added" : ""}">
-              ${selected ? "已加入，点击移除" : "加入我的清单"}
-            </button>
-          </div>
-        `;
-        card.querySelector(".add").addEventListener("click", () => {
-          if (selected) state.selected.delete(course.id);
-          else state.selected.add(course.id);
-          state.showResult = false;
-          if (!selected) queueMobileJump("planPanel");
+      const visible = timeFilteredCourses();
+      renderWizardShell({
+        stepLabel: "按时间选课",
+        title: `周${state.timeDay} ${state.timePeriod} 的课程`,
+        hint: "这里仅显示所选日期和时间段内的课程。课程只能单选。",
+        body: renderSection("选择一门课程", "courseChoices"),
+        nextDisabled: !state.chosenCourseId,
+        nextText: "下一页，进入我的课表"
+      });
+      renderOptionGrid($("#courseChoices"), courseOptions(visible), state.chosenCourseId, key => {
+        state.chosenCourseId = Number(key);
+        render();
+      }, true);
+      if (!visible.length) $("#courseChoices").innerHTML = `<div class="empty">这个时间段暂时没有课程，请返回上一页换一个时间。</div>`;
+    }
+
+    function renderInterestWizard() {
+      if (state.routeStep === 0) {
+        renderWizardShell({
+          stepLabel: "按兴趣选课",
+          title: "先选择系别",
+          hint: "系别只能单选。下一页会看到这个系别里的课程名称。",
+          body: renderSection("系别", "departmentChoices"),
+          nextDisabled: !state.department
+        });
+        renderOptionGrid($("#departmentChoices"), departments(), state.department, key => {
+          state.department = key;
+          state.interest = "";
+          state.chosenCourseId = null;
           render();
         });
-        list.appendChild(card);
+        return;
+      }
+
+      if (state.routeStep === 1) {
+        renderWizardShell({
+          stepLabel: "按兴趣选课",
+          title: `${state.department}里的课程名称`,
+          hint: "课程名称只能单选。下一页会看到对应的具体班级，例如初级、中级、提高班等。",
+          body: renderSection("课程名称", "interestChoices"),
+          nextDisabled: !state.interest
+        });
+        renderOptionGrid($("#interestChoices"), interestsByDepartment(state.department), state.interest, key => {
+          state.interest = key;
+          state.chosenCourseId = null;
+          render();
+        });
+        return;
+      }
+
+      renderWizardShell({
+        stepLabel: "按兴趣选课",
+        title: `选择「${state.interest}」的具体班级`,
+        hint: "这一页只能选择一门具体课程。选好后进入我的课表。",
+        body: renderSection("具体课程", "courseChoices"),
+        nextDisabled: !state.chosenCourseId,
+        nextText: "下一页，进入我的课表"
       });
+      renderOptionGrid($("#courseChoices"), courseOptions(interestFilteredCourses()), state.chosenCourseId, key => {
+        state.chosenCourseId = Number(key);
+        render();
+      }, true);
+    }
+
+    function renderTeacherWizard() {
+      if (state.routeStep === 0) {
+        renderWizardShell({
+          stepLabel: "按老师选课",
+          title: "选择系别与老师",
+          hint: "先单选系别，再单选老师。下一页会看到这位老师对应的课程。",
+          body: renderSection("系别", "departmentChoices") + renderSection("老师", "teacherChoices"),
+          nextDisabled: !state.department || !state.teacher
+        });
+        renderOptionGrid($("#departmentChoices"), departments(), state.department, key => {
+          state.department = key;
+          state.teacher = "";
+          state.chosenCourseId = null;
+          render();
+        });
+        const teacherItems = state.department ? teachersByDepartment(state.department) : [];
+        renderOptionGrid($("#teacherChoices"), teacherItems, state.teacher, key => {
+          state.teacher = key;
+          state.chosenCourseId = null;
+          render();
+        });
+        if (!state.department) $("#teacherChoices").innerHTML = `<div class="empty">请先选择一个系别。</div>`;
+        return;
+      }
+
+      renderWizardShell({
+        stepLabel: "按老师选课",
+        title: `${state.teacher}老师的课程`,
+        hint: "课程只能单选。选好后进入我的课表。",
+        body: renderSection("对应课程", "courseChoices"),
+        nextDisabled: !state.chosenCourseId,
+        nextText: "下一页，进入我的课表"
+      });
+      renderOptionGrid($("#courseChoices"), courseOptions(teacherFilteredCourses()), state.chosenCourseId, key => {
+        state.chosenCourseId = Number(key);
+        render();
+      }, true);
+    }
+
+    function renderPlanIntro() {
+      const course = selectedCourse();
+      renderWizardShell({
+        stepLabel: "我的课表",
+        title: course ? `已加入：${course.name}` : "我的课表",
+        hint: course
+          ? "课程已经自动加入右侧课表。你可以生成结果、复制文字，也可以返回上一页换一门课。"
+          : "右侧是当前课表。你可以继续回到首页选择新的选课方式。",
+        body: `<div class="notice">课表生成和复制功能保留在右侧，操作方式与之前一致。</div>`,
+        nextText: "回到首页"
+      });
+    }
+
+    function renderWizard() {
+      if (state.page === "plan") {
+        renderPlanIntro();
+        return;
+      }
+      if (state.entryMode === "time") renderTimeWizard();
+      if (state.entryMode === "interest") renderInterestWizard();
+      if (state.entryMode === "teacher") renderTeacherWizard();
     }
 
     function renderPlan() {
@@ -1282,64 +1602,116 @@
       ].join("\n");
     }
 
-    function renderFilters() {
-      makeChoices($("#weekdayFilters"), weekdays.map(day => ({ key: day, label: `周${day}` })), state.weekdays, key => {
-        if (state.weekdays.has(key)) state.weekdays.delete(key);
-        else state.weekdays.add(key);
-        render();
-        openCourseModal(state.weekdays.size ? "这些日期可以选" : "全部日期课程");
-      });
-      makeChoices($("#periodFilters"), periods, state.periods, key => {
-        if (state.periods.has(key)) state.periods.delete(key);
-        else state.periods.add(key);
-        render();
-        openCourseModal(state.periods.size ? "这些时间段可以选" : "全部时间课程");
-      });
-      makeChoices($("#categoryFilters"), interestCategories.map(category => category.key), state.categories, key => {
-        if (state.categories.has(key)) state.categories.delete(key);
-        else state.categories.add(key);
-        [...state.interests].forEach(interest => {
-          if (state.categories.size && !state.categories.has(categoryByInterest.get(interest))) {
-            state.interests.delete(interest);
-          }
-        });
-        render();
-        openCourseModal(state.categories.size ? "这些兴趣大类可以选" : "全部兴趣课程");
-      });
-      makeChoices($("#interestFilters"), visibleInterests(), state.interests, key => {
-        if (state.interests.has(key)) state.interests.delete(key);
-        else state.interests.add(key);
-        render();
-        openCourseModal(state.interests.size ? "这些具体兴趣可以选" : "全部具体兴趣课程");
+    function renderStartPage() {
+      $("#startPage").classList.toggle("hidden", state.page !== "start");
+      $("#workspace").classList.toggle("hidden", state.page === "start");
+      document.querySelector(".summary").classList.toggle("hidden", state.page === "start");
+      document.querySelector(".mobile-nav").classList.toggle("hidden", state.page === "start");
+      $("#nextPage").disabled = !state.entryMode;
+      document.querySelectorAll(".entry-option").forEach(button => {
+        const active = button.dataset.mode === state.entryMode;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-checked", String(active));
       });
     }
 
     function render() {
-      renderFilters();
-      renderCourses();
+      renderStartPage();
+      if (state.page !== "start") renderWizard();
       renderPlan();
-      $("#courseTotal").textContent = courses.length;
-      performQueuedJump();
+      $("#visibleCount").textContent = state.page === "start" ? courses.length : visibleCountForRoute();
     }
 
-    $("#keyword").addEventListener("input", event => {
-      state.keyword = event.target.value.trim();
-      renderCourses();
-      window.clearTimeout(searchJumpTimer);
-      searchJumpTimer = window.setTimeout(() => {
-        if (state.keyword) jumpTo("courseSection");
-      }, 450);
+    document.querySelectorAll(".entry-option").forEach(button => {
+      button.addEventListener("click", () => {
+        state.entryMode = button.dataset.mode;
+        renderStartPage();
+      });
     });
 
-    $("#resetFilters").addEventListener("click", () => {
-      state.keyword = "";
-      state.weekdays.clear();
-      state.periods.clear();
-      state.categories.clear();
-      state.interests.clear();
-      $("#keyword").value = "";
+    $("#nextPage").addEventListener("click", () => {
+      if (!state.entryMode) return;
+      resetRoute(state.entryMode);
+      state.page = "wizard";
       render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
+
+    function visibleCountForRoute() {
+      if (state.page === "plan") return getSelectedCourses().length;
+      if (state.entryMode === "time" && state.routeStep === 1) return timeFilteredCourses().length;
+      if (state.entryMode === "interest" && state.routeStep === 2) return interestFilteredCourses().length;
+      if (state.entryMode === "teacher" && state.routeStep === 1) return teacherFilteredCourses().length;
+      return courses.length;
+    }
+
+    function goBack() {
+      if (state.page === "plan") {
+        state.page = "wizard";
+        render();
+        return;
+      }
+
+      if (state.routeStep > 0) {
+        state.routeStep -= 1;
+        state.chosenCourseId = null;
+        if (state.entryMode === "interest" && state.routeStep < 1) state.interest = "";
+        render();
+        return;
+      }
+
+      state.page = "start";
+      render();
+    }
+
+    function goNext() {
+      if (state.page === "plan") {
+        state.page = "start";
+        resetRoute("");
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+
+      if (state.entryMode === "time") {
+        if (state.routeStep === 0 && state.timeDay && state.timePeriod) {
+          state.routeStep = 1;
+          state.chosenCourseId = null;
+          render();
+          return;
+        }
+        if (state.routeStep === 1 && state.chosenCourseId) addChosenCourseToPlan();
+        return;
+      }
+
+      if (state.entryMode === "interest") {
+        if (state.routeStep === 0 && state.department) {
+          state.routeStep = 1;
+          state.interest = "";
+          state.chosenCourseId = null;
+          render();
+          return;
+        }
+        if (state.routeStep === 1 && state.interest) {
+          state.routeStep = 2;
+          state.chosenCourseId = null;
+          render();
+          return;
+        }
+        if (state.routeStep === 2 && state.chosenCourseId) addChosenCourseToPlan();
+        return;
+      }
+
+      if (state.entryMode === "teacher") {
+        if (state.routeStep === 0 && state.department && state.teacher) {
+          state.routeStep = 1;
+          state.chosenCourseId = null;
+          render();
+          return;
+        }
+        if (state.routeStep === 1 && state.chosenCourseId) addChosenCourseToPlan();
+      }
+    }
 
     $("#clearPlan").addEventListener("click", () => {
       state.selected.clear();
@@ -1367,12 +1739,16 @@
     });
 
     document.querySelectorAll(".mobile-nav button").forEach(button => {
-      button.addEventListener("click", () => jumpTo(button.dataset.target));
-    });
-
-    $("#closeCourseModal").addEventListener("click", closeCourseModal);
-    $("#courseModal").addEventListener("click", event => {
-      if (event.target.id === "courseModal") closeCourseModal();
+      button.addEventListener("click", () => {
+        if (button.dataset.target === "startPage") {
+          state.page = "start";
+          resetRoute("");
+          render();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          return;
+        }
+        jumpTo(button.dataset.target);
+      });
     });
 
     render();
