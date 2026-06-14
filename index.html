@@ -295,6 +295,11 @@
       min-width: 0;
     }
 
+    .course.focused {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(79, 143, 69, .18), var(--shadow);
+    }
+
     .course.conflict {
       border-color: rgba(200, 72, 60, .45);
       background: #fffafa;
@@ -597,6 +602,94 @@
       display: none;
     }
 
+    .course-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      align-items: end;
+      background: rgba(23, 33, 27, .28);
+    }
+
+    .course-modal.open {
+      display: flex;
+    }
+
+    .course-modal-sheet {
+      width: 100%;
+      max-height: min(76vh, 680px);
+      padding: 16px 16px calc(18px + env(safe-area-inset-bottom));
+      border-radius: 16px 16px 0 0;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 -20px 46px rgba(23, 33, 27, .16);
+      overflow: auto;
+    }
+
+    .course-modal-head {
+      position: sticky;
+      top: -16px;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: start;
+      padding: 2px 0 12px;
+      background: #fff;
+    }
+
+    .course-modal-head h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+
+    .course-modal-head p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .modal-close {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: #eef2eb;
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .modal-course-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .modal-course {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfa;
+      text-align: left;
+      color: var(--ink);
+    }
+
+    .modal-course strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .modal-course span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
     @media (max-width: 1080px) {
       main {
         grid-template-columns: 280px minmax(0, 1fr);
@@ -762,6 +855,19 @@
       <button class="primary" data-target="courseSection">看课程 <span id="mobileCourseCount">0</span></button>
       <button data-target="planPanel">看课表 <span id="mobileSelectedCount">0</span></button>
     </nav>
+
+    <div class="course-modal" id="courseModal" aria-hidden="true">
+      <div class="course-modal-sheet" role="dialog" aria-modal="true" aria-labelledby="courseModalTitle">
+        <div class="course-modal-head">
+          <div>
+            <h2 id="courseModalTitle">可选课程</h2>
+            <p id="courseModalHint">点击课程名称查看详情，再决定是否加入。</p>
+          </div>
+          <button class="modal-close" id="closeCourseModal" aria-label="关闭课程列表">×</button>
+        </div>
+        <div class="modal-course-list" id="modalCourseList"></div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -903,6 +1009,53 @@
       window.setTimeout(() => jumpTo(targetId), 80);
     }
 
+    function describeActiveFilters() {
+      const parts = [];
+      if (state.weekdays.size) parts.push([...state.weekdays].map(day => `周${day}`).join("、"));
+      if (state.periods.size) parts.push([...state.periods].join("、"));
+      if (state.categories.size) parts.push([...state.categories].join("、"));
+      if (state.interests.size) parts.push([...state.interests].join("、"));
+      return parts.length ? parts.join(" · ") : "全部课程";
+    }
+
+    function openCourseModal(title = "可选课程") {
+      if (!isMobileViewport()) return;
+      const modal = $("#courseModal");
+      const list = $("#modalCourseList");
+      const visible = filteredCourses();
+      $("#courseModalTitle").textContent = title;
+      $("#courseModalHint").textContent = `${describeActiveFilters()}，共 ${visible.length} 门。点击课程名称查看详情，再决定是否加入。`;
+      list.innerHTML = visible.length ? visible.map(course => `
+        <button class="modal-course" data-id="${course.id}">
+          <strong>${course.name}</strong>
+          <span>周${course.weekday} ${course.time} · ${course.classroom}</span>
+          <span>${course.teacher} · ${course.interest}</span>
+        </button>
+      `).join("") : `<div class="empty">没有找到符合条件的课程，可以关闭窗口后减少筛选条件。</div>`;
+      list.querySelectorAll(".modal-course").forEach(button => {
+        button.addEventListener("click", () => {
+          closeCourseModal();
+          focusCourse(Number(button.dataset.id));
+        });
+      });
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeCourseModal() {
+      const modal = $("#courseModal");
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    function focusCourse(courseId) {
+      const card = document.querySelector(`[data-course-id="${courseId}"]`);
+      if (!card) return;
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      card.classList.add("focused");
+      window.setTimeout(() => card.classList.remove("focused"), 1800);
+    }
+
     function toMinutes(value) {
       const [hour, minute] = value.split(":").map(Number);
       return hour * 60 + minute;
@@ -1016,6 +1169,7 @@
         const selected = state.selected.has(course.id);
         const card = document.createElement("article");
         card.className = "course";
+        card.dataset.courseId = course.id;
         card.innerHTML = `
           <div class="course-head">
             <h3>${course.name}</h3>
@@ -1129,8 +1283,18 @@
     }
 
     function renderFilters() {
-      makeChoices($("#weekdayFilters"), weekdays.map(day => ({ key: day, label: `周${day}` })), state.weekdays, key => toggle(state.weekdays, key));
-      makeChoices($("#periodFilters"), periods, state.periods, key => toggle(state.periods, key));
+      makeChoices($("#weekdayFilters"), weekdays.map(day => ({ key: day, label: `周${day}` })), state.weekdays, key => {
+        if (state.weekdays.has(key)) state.weekdays.delete(key);
+        else state.weekdays.add(key);
+        render();
+        openCourseModal(state.weekdays.size ? "这些日期可以选" : "全部日期课程");
+      });
+      makeChoices($("#periodFilters"), periods, state.periods, key => {
+        if (state.periods.has(key)) state.periods.delete(key);
+        else state.periods.add(key);
+        render();
+        openCourseModal(state.periods.size ? "这些时间段可以选" : "全部时间课程");
+      });
       makeChoices($("#categoryFilters"), interestCategories.map(category => category.key), state.categories, key => {
         if (state.categories.has(key)) state.categories.delete(key);
         else state.categories.add(key);
@@ -1199,6 +1363,11 @@
 
     document.querySelectorAll(".mobile-nav button").forEach(button => {
       button.addEventListener("click", () => jumpTo(button.dataset.target));
+    });
+
+    $("#closeCourseModal").addEventListener("click", closeCourseModal);
+    $("#courseModal").addEventListener("click", event => {
+      if (event.target.id === "courseModal") closeCourseModal();
     });
 
     render();
