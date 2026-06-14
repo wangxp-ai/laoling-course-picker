@@ -133,6 +133,7 @@
       max-height: calc(100vh - 102px);
       overflow: auto;
       padding: 18px;
+      scroll-margin-top: 88px;
     }
 
     .section-title {
@@ -221,6 +222,7 @@
     .content {
       display: grid;
       gap: 14px;
+      scroll-margin-top: 88px;
     }
 
     .guide {
@@ -424,6 +426,7 @@
       padding: 18px;
       max-height: calc(100vh - 102px);
       overflow: auto;
+      scroll-margin-top: 88px;
     }
 
     .plan-head {
@@ -590,6 +593,10 @@
       white-space: nowrap;
     }
 
+    .mobile-nav {
+      display: none;
+    }
+
     @media (max-width: 1080px) {
       main {
         grid-template-columns: 280px minmax(0, 1fr);
@@ -615,7 +622,7 @@
 
       main {
         grid-template-columns: 1fr;
-        padding: 14px;
+        padding: 14px 14px 88px;
       }
 
       .filters {
@@ -633,6 +640,35 @@
 
       .courses {
         grid-template-columns: 1fr;
+      }
+
+      .mobile-nav {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 30;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+        background: rgba(255, 255, 255, .94);
+        border-top: 1px solid var(--line);
+        backdrop-filter: blur(14px);
+      }
+
+      .mobile-nav button {
+        min-height: 44px;
+        border-radius: 8px;
+        background: #eef2eb;
+        color: var(--ink);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .mobile-nav button.primary {
+        background: var(--green);
+        color: #fff;
       }
     }
   </style>
@@ -656,7 +692,7 @@
     </header>
 
     <main>
-      <aside class="panel filters">
+      <aside class="panel filters" id="filtersPanel">
         <h2 class="section-title">筛选课程</h2>
         <p class="hint">先选有空的星期和喜欢的兴趣，右侧会自动生成你的选课清单。</p>
 
@@ -684,7 +720,7 @@
         <button class="reset" id="resetFilters">清空筛选</button>
       </aside>
 
-      <section class="content">
+      <section class="content" id="courseSection">
         <div class="panel guide">
           <div>
             <h2>把密密麻麻的课表，变成一份自己的周安排</h2>
@@ -704,7 +740,7 @@
         <div class="courses" id="courseList"></div>
       </section>
 
-      <aside class="panel plan">
+      <aside class="panel plan" id="planPanel">
         <div class="plan-head">
           <h2>我的选课清单</h2>
           <button class="clear" id="clearPlan">全部移除</button>
@@ -720,6 +756,12 @@
         <div class="week" id="weekPlan"></div>
       </aside>
     </main>
+
+    <nav class="mobile-nav" aria-label="手机快捷导航">
+      <button data-target="filtersPanel">改条件</button>
+      <button class="primary" data-target="courseSection">看课程 <span id="mobileCourseCount">0</span></button>
+      <button data-target="planPanel">看课表 <span id="mobileSelectedCount">0</span></button>
+    </nav>
   </div>
 
   <script>
@@ -833,10 +875,33 @@
       categories: new Set(),
       interests: new Set(),
       selected: new Set(),
-      showResult: false
+      showResult: false,
+      jumpTarget: ""
     };
 
     const $ = selector => document.querySelector(selector);
+    let searchJumpTimer = 0;
+
+    function isMobileViewport() {
+      return window.matchMedia("(max-width: 760px)").matches;
+    }
+
+    function jumpTo(targetId) {
+      const target = document.getElementById(targetId);
+      if (!target) return;
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function queueMobileJump(targetId = "courseSection") {
+      if (isMobileViewport()) state.jumpTarget = targetId;
+    }
+
+    function performQueuedJump() {
+      if (!state.jumpTarget) return;
+      const targetId = state.jumpTarget;
+      state.jumpTarget = "";
+      window.setTimeout(() => jumpTo(targetId), 80);
+    }
 
     function toMinutes(value) {
       const [hour, minute] = value.split(":").map(Number);
@@ -916,6 +981,7 @@
     function toggle(set, key) {
       if (set.has(key)) set.delete(key);
       else set.add(key);
+      queueMobileJump("courseSection");
       render();
     }
 
@@ -938,6 +1004,7 @@
       const list = $("#courseList");
       const visible = filteredCourses();
       $("#visibleCount").textContent = visible.length;
+      $("#mobileCourseCount").textContent = visible.length;
 
       if (!visible.length) {
         list.innerHTML = `<div class="panel empty">没有找到符合条件的课程，可以减少筛选条件再试试。</div>`;
@@ -969,6 +1036,7 @@
           if (selected) state.selected.delete(course.id);
           else state.selected.add(course.id);
           state.showResult = false;
+          if (!selected) queueMobileJump("planPanel");
           render();
         });
         list.appendChild(card);
@@ -978,6 +1046,7 @@
     function renderPlan() {
       const selected = sortCourses(getSelectedCourses());
       $("#selectedCount").textContent = selected.length;
+      $("#mobileSelectedCount").textContent = selected.length;
       $("#planNotice").textContent = selected.length
         ? "下面是你当前的选课组合。若有时间冲突，课程卡片会出现红色提醒。"
         : "还没有选择课程。你可以从中间的课程卡片加入清单。";
@@ -1070,6 +1139,7 @@
             state.interests.delete(interest);
           }
         });
+        queueMobileJump("courseSection");
         render();
       });
       makeChoices($("#interestFilters"), visibleInterests(), state.interests, key => toggle(state.interests, key));
@@ -1080,11 +1150,16 @@
       renderCourses();
       renderPlan();
       $("#courseTotal").textContent = courses.length;
+      performQueuedJump();
     }
 
     $("#keyword").addEventListener("input", event => {
       state.keyword = event.target.value.trim();
       renderCourses();
+      window.clearTimeout(searchJumpTimer);
+      searchJumpTimer = window.setTimeout(() => {
+        if (state.keyword) jumpTo("courseSection");
+      }, 450);
     });
 
     $("#resetFilters").addEventListener("click", () => {
@@ -1120,6 +1195,10 @@
         $("#copyResult").textContent = "请手动复制";
         setTimeout(() => { $("#copyResult").textContent = "复制文字"; }, 1400);
       }
+    });
+
+    document.querySelectorAll(".mobile-nav button").forEach(button => {
+      button.addEventListener("click", () => jumpTo(button.dataset.target));
     });
 
     render();
