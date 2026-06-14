@@ -1,0 +1,1128 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>乐龄学院选课助手 Demo</title>
+  <style>
+    :root {
+      --bg: #f6f7f2;
+      --paper: #ffffff;
+      --ink: #17211b;
+      --muted: #607064;
+      --line: #dfe6da;
+      --green: #4f8f45;
+      --green-2: #e8f3e4;
+      --gold: #d89b34;
+      --red: #c8483c;
+      --blue: #3c78a8;
+      --shadow: 0 16px 44px rgba(29, 50, 33, .11);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, #f9fbf5 0%, var(--bg) 44%, #eef4ec 100%);
+      letter-spacing: 0;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 255, 255, .92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--green);
+      border-radius: 8px;
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .brand p {
+      margin: 3px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .summary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .summary strong {
+      color: var(--ink);
+      font-size: 18px;
+    }
+
+    main {
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 22px 20px 28px;
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr) 330px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .filters {
+      position: sticky;
+      top: 82px;
+      max-height: calc(100vh - 102px);
+      overflow: auto;
+      padding: 18px;
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .hint {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .field {
+      margin: 0 0 20px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .field-note {
+      margin: -2px 0 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .search {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 12px;
+      outline: none;
+      background: #fbfcfa;
+    }
+
+    .search:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(79, 143, 69, .16);
+    }
+
+    .choice-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .choice {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      background: #fbfcfa;
+      border-radius: 8px;
+      padding: 8px 11px;
+      color: var(--ink);
+      transition: .16s ease;
+    }
+
+    .choice:hover {
+      border-color: #b7c8b1;
+      background: #f3f8f0;
+    }
+
+    .choice.active {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+      box-shadow: 0 8px 18px rgba(79, 143, 69, .24);
+    }
+
+    .reset {
+      width: 100%;
+      height: 42px;
+      border-radius: 8px;
+      background: #eef2eb;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .content {
+      display: grid;
+      gap: 14px;
+    }
+
+    .guide {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      background: #fff;
+    }
+
+    .guide h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      line-height: 1.25;
+    }
+
+    .guide p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .count-box {
+      min-width: 132px;
+      padding: 14px;
+      border-radius: 8px;
+      background: var(--green-2);
+      text-align: center;
+    }
+
+    .count-box strong {
+      display: block;
+      font-size: 32px;
+      line-height: 1;
+      color: var(--green);
+    }
+
+    .count-box span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .interest-strip {
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    .interest-strip .choice-grid {
+      max-height: 132px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .courses {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .course {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .course.conflict {
+      border-color: rgba(200, 72, 60, .45);
+      background: #fffafa;
+    }
+
+    .course-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .course h3 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .tag {
+      flex: 0 0 auto;
+      max-width: 108px;
+      padding: 5px 8px;
+      border-radius: 8px;
+      color: var(--green);
+      background: var(--green-2);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .meta {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .meta strong {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .add {
+      flex: 1;
+      min-height: 42px;
+      border-radius: 8px;
+      background: var(--green);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .add.added {
+      background: #e5efe1;
+      color: var(--green);
+    }
+
+    .add.blocked {
+      background: #f7e5e2;
+      color: var(--red);
+    }
+
+    .conflict-note {
+      color: var(--red);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .alternatives {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #fff4f2;
+      border: 1px solid rgba(200, 72, 60, .16);
+    }
+
+    .alternatives-title {
+      color: var(--red);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .alternative {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .alternative strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .alt-add {
+      min-height: 32px;
+      padding: 0 10px;
+      border-radius: 8px;
+      background: #fff;
+      color: var(--green);
+      border: 1px solid #c9dcc3;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .empty {
+      padding: 36px 20px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .plan {
+      position: sticky;
+      top: 82px;
+      padding: 18px;
+      max-height: calc(100vh - 102px);
+      overflow: auto;
+    }
+
+    .plan-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .plan-head h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .clear {
+      color: var(--muted);
+      background: transparent;
+      padding: 6px 0;
+      font-size: 13px;
+    }
+
+    .notice {
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #f5f7f3;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .selected-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .selected {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfa;
+    }
+
+    .selected strong {
+      display: block;
+      font-size: 15px;
+      line-height: 1.35;
+      margin-bottom: 6px;
+    }
+
+    .selected span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .remove {
+      margin-top: 8px;
+      color: var(--red);
+      background: transparent;
+      font-size: 13px;
+      padding: 0;
+    }
+
+    .result-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 0 0 14px;
+    }
+
+    .result-btn {
+      min-height: 40px;
+      border-radius: 8px;
+      background: var(--green);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .result-btn.secondary {
+      background: #eef2eb;
+      color: var(--ink);
+    }
+
+    .result-box {
+      display: none;
+      margin: 0 0 16px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fbfcfa;
+      white-space: pre-wrap;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .result-box.show {
+      display: block;
+    }
+
+    .week {
+      display: grid;
+      gap: 8px;
+    }
+
+    .day {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .day-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 10px;
+      background: #f0f5ed;
+      font-weight: 800;
+    }
+
+    .day-title span {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .slot {
+      padding: 9px 10px;
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .slot b {
+      display: block;
+      font-size: 14px;
+    }
+
+    .slot em {
+      color: var(--muted);
+      font-style: normal;
+    }
+
+    .slot-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .slot-remove {
+      min-height: 28px;
+      padding: 0 8px;
+      border-radius: 8px;
+      background: #f7e5e2;
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 1080px) {
+      main {
+        grid-template-columns: 280px minmax(0, 1fr);
+      }
+
+      .plan {
+        position: static;
+        grid-column: 1 / -1;
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .summary {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+        padding: 14px;
+      }
+
+      .filters {
+        position: static;
+        max-height: none;
+      }
+
+      .guide {
+        grid-template-columns: 1fr;
+      }
+
+      .guide h2 {
+        font-size: 21px;
+      }
+
+      .courses {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="brand-mark">选</div>
+          <div>
+            <h1>乐龄学院选课助手</h1>
+            <p>2026年春季课表 Demo · 先选兴趣，再看时间冲突</p>
+          </div>
+        </div>
+        <div class="summary">
+          <span>已选 <strong id="selectedCount">0</strong> 门</span>
+          <span>当前显示 <strong id="visibleCount">0</strong> 门</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <aside class="panel filters">
+        <h2 class="section-title">筛选课程</h2>
+        <p class="hint">先选有空的星期和喜欢的兴趣，右侧会自动生成你的选课清单。</p>
+
+        <div class="field">
+          <label for="keyword">搜索课程或老师</label>
+          <input class="search" id="keyword" placeholder="例如：营养、AI、钢琴、周密" />
+        </div>
+
+        <div class="field">
+          <label>我有空的星期</label>
+          <div class="choice-grid" id="weekdayFilters"></div>
+        </div>
+
+        <div class="field">
+          <label>时间段</label>
+          <div class="choice-grid" id="periodFilters"></div>
+        </div>
+
+        <div class="field">
+          <label>兴趣大类</label>
+          <p class="field-note">先选大方向，下面的具体兴趣会自动变少。</p>
+          <div class="choice-grid" id="categoryFilters"></div>
+        </div>
+
+        <button class="reset" id="resetFilters">清空筛选</button>
+      </aside>
+
+      <section class="content">
+        <div class="panel guide">
+          <div>
+            <h2>把密密麻麻的课表，变成一份自己的周安排</h2>
+            <p>兴趣是前台入口，时间段帮你快速缩小范围。加入清单后，系统会提醒同一天同时间段是否冲突。</p>
+          </div>
+          <div class="count-box">
+            <strong id="courseTotal">0</strong>
+            <span>春季课程</span>
+          </div>
+        </div>
+
+        <div class="panel interest-strip">
+          <h2 class="section-title">按具体兴趣选课</h2>
+          <div class="choice-grid" id="interestFilters"></div>
+        </div>
+
+        <div class="courses" id="courseList"></div>
+      </section>
+
+      <aside class="panel plan">
+        <div class="plan-head">
+          <h2>我的选课清单</h2>
+          <button class="clear" id="clearPlan">全部移除</button>
+        </div>
+        <p class="notice" id="planNotice">还没有选择课程。你可以从中间的课程卡片加入清单。</p>
+        <div class="selected-list" id="selectedList"></div>
+        <div class="result-actions">
+          <button class="result-btn" id="generateResult">生成结果</button>
+          <button class="result-btn secondary" id="copyResult">复制文字</button>
+        </div>
+        <div class="result-box" id="resultBox"></div>
+        <h2 class="section-title">我的周课表</h2>
+        <div class="week" id="weekPlan"></div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const courses = [
+      { id: 1, department: "舞蹈系", name: "国标舞提高班", teacher: "刘丽（2位老师）", weekday: "一", time: "09:00-10:30", classroom: "舞蹈教室", interest: "国标舞" },
+      { id: 2, department: "舞蹈系", name: "芭蕾形体课", teacher: "蒋萍", weekday: "一", time: "10:40-12:10", classroom: "舞蹈教室", interest: "形体" },
+      { id: 3, department: "舞蹈系", name: "锅庄中级班", teacher: "雷国红", weekday: "一", time: "14:40-16:10", classroom: "舞蹈教室", interest: "锅庄舞" },
+      { id: 4, department: "舞蹈系", name: "锅庄初级班", teacher: "雷国红", weekday: "一", time: "16:20-17:50", classroom: "舞蹈教室", interest: "锅庄舞" },
+      { id: 5, department: "舞蹈系", name: "T台秀表演班", teacher: "周岑", weekday: "二", time: "13:30-15:00", classroom: "舞蹈教室", interest: "T台走秀" },
+      { id: 6, department: "舞蹈系", name: "新疆舞中级班", teacher: "佟童", weekday: "二", time: "15:10-16:40", classroom: "舞蹈教室", interest: "新疆舞" },
+      { id: 7, department: "舞蹈系", name: "国风走秀基础班", teacher: "卢世容", weekday: "二", time: "09:00-10:30", classroom: "电教楼501教室", interest: "国风走秀" },
+      { id: 8, department: "舞蹈系", name: "国风走秀提高班", teacher: "卢世容", weekday: "二", time: "10:40-12:10", classroom: "电教楼501教室", interest: "国风走秀" },
+      { id: 9, department: "舞蹈系", name: "新疆舞初级提升班", teacher: "佟童", weekday: "二", time: "13:30-15:00", classroom: "电教楼501教室", interest: "新疆舞" },
+      { id: 10, department: "舞蹈系", name: "T台秀初级班", teacher: "周岑", weekday: "二", time: "15:10-16:40", classroom: "电教楼501教室", interest: "T台走秀" },
+      { id: 11, department: "舞蹈系", name: "国标舞初级班", teacher: "刘丽", weekday: "三", time: "10:40-12:10", classroom: "舞蹈教室", interest: "国标舞" },
+      { id: 12, department: "舞蹈系", name: "朝鲜族扇子舞", teacher: "申银梅", weekday: "三", time: "13:30-15:00", classroom: "舞蹈教室", interest: "民族舞" },
+      { id: 13, department: "舞蹈系", name: "时装走秀", teacher: "谢将红", weekday: "三", time: "15:10-16:40", classroom: "舞蹈教室", interest: "T台走秀" },
+      { id: 14, department: "舞蹈系", name: "锅庄提升一班", teacher: "李黎", weekday: "四", time: "09:00-10:30", classroom: "舞蹈教室", interest: "锅庄舞" },
+      { id: 15, department: "舞蹈系", name: "锅庄提升二班", teacher: "李黎", weekday: "四", time: "10:40-12:10", classroom: "舞蹈教室", interest: "锅庄舞" },
+      { id: 16, department: "舞蹈系", name: "民族舞蹈", teacher: "蒋萍", weekday: "四", time: "13:30-15:00", classroom: "舞蹈教室", interest: "民族舞" },
+      { id: 17, department: "舞蹈系", name: "印度宝莱坞", teacher: "美玲", weekday: "四", time: "15:10-16:40", classroom: "舞蹈教室", interest: "印度舞" },
+      { id: 18, department: "舞蹈系", name: "古风现代舞", teacher: "赵巧", weekday: "四", time: "09:00-10:30", classroom: "电教楼501教室", interest: "现代舞" },
+      { id: 19, department: "舞蹈系", name: "艾扬格瑜伽", teacher: "秦良秀", weekday: "四", time: "10:40-12:10", classroom: "电教楼501教室", interest: "瑜伽" },
+      { id: 20, department: "舞蹈系", name: "形体一班", teacher: "邓莉", weekday: "五", time: "09:00-10:30", classroom: "舞蹈教室", interest: "形体" },
+      { id: 21, department: "舞蹈系", name: "形体二班", teacher: "邓莉", weekday: "五", time: "10:40-12:10", classroom: "舞蹈教室", interest: "形体" },
+      { id: 22, department: "舞蹈系", name: "拉丁舞-基础进阶", teacher: "齐文斌", weekday: "五", time: "15:10-16:40", classroom: "舞蹈教室", interest: "拉丁舞" },
+      { id: 23, department: "舞蹈系", name: "古典成品舞--象王行", teacher: "沈佳璐", weekday: "五", time: "13:30-15:00", classroom: "舞蹈教室", interest: "古典舞" },
+      { id: 24, department: "舞蹈系", name: "民族民间舞--蒙族舞", teacher: "贾雪", weekday: "五", time: "13:30-15:00", classroom: "电教楼501教室", interest: "民族舞" },
+      { id: 25, department: "舞蹈系", name: "国风舞", teacher: "陈俊", weekday: "五", time: "15:10-16:40", classroom: "电教楼501教室", interest: "国风舞" },
+      { id: 26, department: "声乐系", name: "声乐中级三班", teacher: "胡裴海", weekday: "三", time: "13:30-15:00", classroom: "东三教室", interest: "声乐" },
+      { id: 27, department: "声乐系", name: "合唱班", teacher: "胡裴海", weekday: "三", time: "15:10-16:40", classroom: "东三教室", interest: "合唱" },
+      { id: 28, department: "声乐系", name: "声乐初级一班", teacher: "陈慧娟", weekday: "四", time: "13:30-15:00", classroom: "多功能教室", interest: "声乐" },
+      { id: 29, department: "声乐系", name: "声乐精品小班（15人以内）", teacher: "陈慧娟", weekday: "四", time: "15:10-16:40", classroom: "多功能教室", interest: "声乐" },
+      { id: 30, department: "声乐系", name: "声乐中级一班", teacher: "李秀杰", weekday: "五", time: "09:00-10:30", classroom: "多功能教室", interest: "声乐" },
+      { id: 31, department: "声乐系", name: "声乐中级二班", teacher: "李秀杰", weekday: "五", time: "10:40-12:10", classroom: "多功能教室", interest: "声乐" },
+      { id: 32, department: "器乐系", name: "竹笛初级班", teacher: "闫帅", weekday: "一", time: "10:40-12:10", classroom: "东三教室", interest: "竹笛" },
+      { id: 33, department: "器乐系", name: "非洲鼓初级", teacher: "周晓春", weekday: "一", time: "13:30-15:00", classroom: "东三教室", interest: "非洲鼓" },
+      { id: 34, department: "器乐系", name: "古筝初级班", teacher: "胡月", weekday: "一", time: "09:00-10:30", classroom: "多功能教室", interest: "古筝" },
+      { id: 35, department: "器乐系", name: "古筝提升班", teacher: "胡月", weekday: "一", time: "10:40-12:10", classroom: "多功能教室", interest: "古筝" },
+      { id: 36, department: "器乐系", name: "钢琴初级", teacher: "张佳", weekday: "一", time: "10:40-12:10", classroom: "电教楼504教室", interest: "钢琴" },
+      { id: 37, department: "器乐系", name: "钢琴中级一期", teacher: "张佳", weekday: "一", time: "13:30-15:00", classroom: "电教楼504教室", interest: "钢琴" },
+      { id: 38, department: "器乐系", name: "钢琴高级二期", teacher: "张佳", weekday: "一", time: "15:10-16:40", classroom: "电教楼504教室", interest: "钢琴" },
+      { id: 39, department: "器乐系", name: "钢琴初级二期", teacher: "张佳", weekday: "二", time: "09:00-10:30", classroom: "电教楼504教室", interest: "钢琴" },
+      { id: 40, department: "器乐系", name: "钢琴初级三期", teacher: "张佳", weekday: "二", time: "10:40-12:10", classroom: "电教楼504教室", interest: "钢琴" },
+      { id: 41, department: "器乐系", name: "巴扬手风琴二期", teacher: "张佳", weekday: "二", time: "13:30-15:00", classroom: "多功能教室", interest: "手风琴" },
+      { id: 42, department: "器乐系", name: "古琴初级班", teacher: "张兰", weekday: "四", time: "15:10-16:40", classroom: "电教楼502教室", interest: "古琴" },
+      { id: 43, department: "语言文学系", name: "20世纪中国文学经典鉴赏", teacher: "余娟", weekday: "一", time: "09:00-10:30", classroom: "电教楼502教室", interest: "文学鉴赏" },
+      { id: 44, department: "语言文学系", name: "朗读研学班", teacher: "张泽林", weekday: "二", time: "13:30-15:00", classroom: "东三教室", interest: "朗读" },
+      { id: 45, department: "语言文学系", name: "实用英语口语初级班", teacher: "黄华", weekday: "三", time: "09:00-10:30", classroom: "东三教室", interest: "英语" },
+      { id: 46, department: "语言文学系", name: "实用英语口语提升班", teacher: "黄华", weekday: "三", time: "10:40-12:10", classroom: "东三教室", interest: "英语" },
+      { id: 47, department: "语言文学系", name: "文学鉴赏与朗诵一班（老班）", teacher: "胡琴", weekday: "三", time: "13:30-15:00", classroom: "电教楼502教室", interest: "朗诵" },
+      { id: 48, department: "语言文学系", name: "文学鉴赏与朗诵二班（新班）", teacher: "胡琴", weekday: "三", time: "15:10-16:40", classroom: "电教楼502教室", interest: "朗诵" },
+      { id: 49, department: "语言文学系", name: "旅游英语", teacher: "林宁", weekday: "四", time: "10:40-12:10", classroom: "东三教室", interest: "英语" },
+      { id: 50, department: "语言文学系", name: "普通话基础与诵读表演", teacher: "李申建", weekday: "五", time: "10:40-12:10", classroom: "东三教室", interest: "普通话" },
+      { id: 51, department: "语言文学系", name: "拼音入门与普通话", teacher: "李申建", weekday: "五", time: "13:30-15:00", classroom: "东三教室", interest: "普通话" },
+      { id: 52, department: "语言文学系", name: "电视播音主持实践班", teacher: "李申建", weekday: "五", time: "15:10-16:40", classroom: "东三教室", interest: "播音主持" },
+      { id: 53, department: "信息技术系", name: "AI音视频制作初级班", teacher: "周密", weekday: "二", time: "09:00-10:30", classroom: "东三教室", interest: "AI创作" },
+      { id: 54, department: "信息技术系", name: "手机摄影与美照制作", teacher: "樊小龙", weekday: "二", time: "10:40-12:10", classroom: "东三教室", interest: "手机摄影" },
+      { id: 55, department: "信息技术系", name: "AI视频创作中级班", teacher: "周密", weekday: "二", time: "15:10-16:40", classroom: "东三教室", interest: "AI创作" },
+      { id: 56, department: "信息技术系", name: "手机短视频拍摄与制作", teacher: "李申建", weekday: "五", time: "09:00-10:30", classroom: "东三教室", interest: "短视频" },
+      { id: 57, department: "生活保健系", name: "非遗剪纸大师基础班", teacher: "袁成祥（非遗传承人）", weekday: "一", time: "09:00-10:30", classroom: "东三教室", interest: "剪纸" },
+      { id: 58, department: "生活保健系", name: "中老年慢性病中医保健养生", teacher: "勾宗惠", weekday: "一", time: "15:10-16:40", classroom: "东三教室", interest: "中医保健" },
+      { id: 59, department: "生活保健系", name: "饮食营养与居家收纳", teacher: "王正平", weekday: "二", time: "10:40-12:10", classroom: "多功能教室", interest: "营养" },
+      { id: 60, department: "生活保健系", name: "手工与花艺", teacher: "燕露", weekday: "三", time: "10:40-12:10", classroom: "多功能教室", interest: "花艺" },
+      { id: 61, department: "生活保健系", name: "美学修养与生活", teacher: "马婧", weekday: "三", time: "10:40-12:10", classroom: "电教楼502教室", interest: "美学修养" },
+      { id: 62, department: "生活保健系", name: "西点烘焙初级班", teacher: "韩全来", weekday: "三", time: "10:40-12:10", classroom: "烘焙教室", interest: "烘焙" },
+      { id: 63, department: "生活保健系", name: "乐享体重--慧吃慧动", teacher: "雅丽", weekday: "四", time: "09:00-10:30", classroom: "多功能教室", interest: "营养" },
+      { id: 64, department: "生活保健系", name: "茶艺与养生", teacher: "刘培中", weekday: "四", time: "10:40-12:10", classroom: "多功能教室", interest: "茶艺" },
+      { id: 65, department: "运动健身系", name: "杨式太极拳十六式", teacher: "陈群", weekday: "一", time: "10:00-11:30", classroom: "电教楼501教室", interest: "太极拳" },
+      { id: 66, department: "运动健身系", name: "杨式太极拳三十二式", teacher: "陈群", weekday: "一", time: "13:00-14:30", classroom: "舞蹈教室", interest: "太极拳" },
+      { id: 67, department: "运动健身系", name: "古月派养生武舞一班", teacher: "幸应芬", weekday: "二", time: "09:00-10:30", classroom: "舞蹈教室", interest: "养生武舞" },
+      { id: 68, department: "运动健身系", name: "古月派养生武舞二班", teacher: "幸应芬", weekday: "二", time: "10:40-12:10", classroom: "舞蹈教室", interest: "养生武舞" },
+      { id: 69, department: "运动健身系", name: "古月派养生武舞三班", teacher: "幸应芬", weekday: "三", time: "09:00-10:30", classroom: "舞蹈教室", interest: "养生武舞" },
+      { id: 70, department: "运动健身系", name: "八段锦一班", teacher: "路文忠", weekday: "三", time: "09:00-10:30", classroom: "电教楼501教室", interest: "八段锦" },
+      { id: 71, department: "运动健身系", name: "长寿功", teacher: "路文忠", weekday: "三", time: "10:40-12:10", classroom: "电教楼501教室", interest: "长寿功" },
+      { id: 72, department: "运动健身系", name: "健身柔力球", teacher: "曾兵", weekday: "四", time: "13:30-15:00", classroom: "学术报告厅外厅 大榕树", interest: "柔力球" },
+      { id: 73, department: "书画系", name: "工笔花鸟人物初级班", teacher: "黄莉", weekday: "二", time: "10:40-12:10", classroom: "电教楼502教室", interest: "工笔画" },
+      { id: 74, department: "书画系", name: "书法绘画综合班", teacher: "郎超、刘先治", weekday: "二", time: "15:10-16:40", classroom: "电教楼502教室", interest: "书法绘画" },
+      { id: 75, department: "书画系", name: "毛笔小楷书法", teacher: "夏雪", weekday: "四", time: "09:00-10:30", classroom: "电教楼502教室", interest: "书法" },
+      { id: 76, department: "特色课程", name: "乒乓球竞技班", teacher: "周密", weekday: "五", time: "14:00-15:30", classroom: "银杏苑乒乓球室", interest: "乒乓球" }
+    ];
+
+    const weekdays = ["一", "二", "三", "四", "五"];
+    const periods = [
+      { key: "09:00-10:30", label: "09:00-10:30", start: "09:00", end: "10:30" },
+      { key: "10:40-12:10", label: "10:40-12:10", start: "10:40", end: "12:10" },
+      { key: "13:30-15:00", label: "13:30-15:00", start: "13:30", end: "15:00" },
+      { key: "15:10-16:40", label: "15:10-16:40", start: "15:10", end: "16:40" },
+      { key: "16:20-17:50", label: "16:20-17:50", start: "16:20", end: "17:50" }
+    ];
+
+    const interestCategories = [
+      { key: "舞蹈形体", interests: ["国标舞", "形体", "锅庄舞", "T台走秀", "新疆舞", "国风走秀", "民族舞", "印度舞", "现代舞", "瑜伽", "拉丁舞", "古典舞", "国风舞"] },
+      { key: "声乐器乐", interests: ["声乐", "合唱", "竹笛", "非洲鼓", "古筝", "钢琴", "手风琴", "古琴"] },
+      { key: "语言表达", interests: ["文学鉴赏", "朗读", "英语", "朗诵", "普通话", "播音主持"] },
+      { key: "手机与AI", interests: ["AI创作", "手机摄影", "短视频"] },
+      { key: "营养健康", interests: ["营养", "中医保健", "茶艺"] },
+      { key: "生活美学", interests: ["剪纸", "花艺", "美学修养", "烘焙"] },
+      { key: "运动健身", interests: ["太极拳", "养生武舞", "八段锦", "长寿功", "柔力球", "乒乓球"] },
+      { key: "书画手作", interests: ["工笔画", "书法绘画", "书法"] }
+    ];
+
+    const categoryByInterest = new Map(
+      interestCategories.flatMap(category => category.interests.map(interest => [interest, category.key]))
+    );
+
+    const state = {
+      keyword: "",
+      weekdays: new Set(),
+      periods: new Set(),
+      categories: new Set(),
+      interests: new Set(),
+      selected: new Set(),
+      showResult: false
+    };
+
+    const $ = selector => document.querySelector(selector);
+
+    function toMinutes(value) {
+      const [hour, minute] = value.split(":").map(Number);
+      return hour * 60 + minute;
+    }
+
+    function timeRange(course) {
+      const [start, end] = course.time.split("-");
+      return { start: toMinutes(start), end: toMinutes(end) };
+    }
+
+    function slotRange(period) {
+      return { start: toMinutes(period.start), end: toMinutes(period.end) };
+    }
+
+    function overlaps(a, b) {
+      return a.start < b.end && a.end > b.start;
+    }
+
+    function hasConflict(course, selectedCourses = getSelectedCourses()) {
+      return selectedCourses.find(item => {
+        if (item.id === course.id || item.weekday !== course.weekday) return false;
+        const a = timeRange(course);
+        const b = timeRange(item);
+        return overlaps(a, b);
+      });
+    }
+
+    function getSelectedCourses() {
+      return courses.filter(course => state.selected.has(course.id));
+    }
+
+    function sortedUnique(key) {
+      return [...new Set(courses.map(course => course[key]))].sort((a, b) => a.localeCompare(b, "zh-Hans-CN"));
+    }
+
+    function sortCourses(items) {
+      return [...items].sort((a, b) => {
+        const dayDiff = weekdays.indexOf(a.weekday) - weekdays.indexOf(b.weekday);
+        if (dayDiff) return dayDiff;
+        return timeRange(a).start - timeRange(b).start;
+      });
+    }
+
+    function visibleInterests() {
+      const all = sortedUnique("interest");
+      if (!state.categories.size) return all;
+      return all.filter(interest => state.categories.has(categoryByInterest.get(interest)));
+    }
+
+    function getAlternatives(course, limit = 3) {
+      const selected = getSelectedCourses();
+      const sameInterest = courses.filter(item => item.id !== course.id && item.interest === course.interest);
+      const sameCategory = courses.filter(item => (
+        item.id !== course.id &&
+        item.interest !== course.interest &&
+        categoryByInterest.get(item.interest) === categoryByInterest.get(course.interest)
+      ));
+      return sortCourses([...sameInterest, ...sameCategory])
+        .filter(item => !state.selected.has(item.id) && !hasConflict(item, selected))
+        .slice(0, limit);
+    }
+
+    function makeChoices(container, items, activeSet, onClick) {
+      container.innerHTML = "";
+      items.forEach(item => {
+        const key = typeof item === "string" ? item : item.key;
+        const label = typeof item === "string" ? item : item.label;
+        const button = document.createElement("button");
+        button.className = `choice ${activeSet.has(key) ? "active" : ""}`;
+        button.textContent = label;
+        button.addEventListener("click", () => onClick(key));
+        container.appendChild(button);
+      });
+    }
+
+    function toggle(set, key) {
+      if (set.has(key)) set.delete(key);
+      else set.add(key);
+      render();
+    }
+
+    function filteredCourses() {
+      return sortCourses(courses.filter(course => {
+        const availableMatch = state.selected.has(course.id) || !hasConflict(course);
+        const text = `${course.name}${course.teacher}${course.interest}${course.classroom}`.toLowerCase();
+        const keywordMatch = !state.keyword || text.includes(state.keyword.toLowerCase());
+        const weekdayMatch = !state.weekdays.size || state.weekdays.has(course.weekday);
+        const periodMatch = !state.periods.size || periods.some(period => (
+          state.periods.has(period.key) && overlaps(timeRange(course), slotRange(period))
+        ));
+        const categoryMatch = !state.categories.size || state.categories.has(categoryByInterest.get(course.interest));
+        const interestMatch = !state.interests.size || state.interests.has(course.interest);
+        return availableMatch && keywordMatch && weekdayMatch && periodMatch && categoryMatch && interestMatch;
+      }));
+    }
+
+    function renderCourses() {
+      const list = $("#courseList");
+      const visible = filteredCourses();
+      $("#visibleCount").textContent = visible.length;
+
+      if (!visible.length) {
+        list.innerHTML = `<div class="panel empty">没有找到符合条件的课程，可以减少筛选条件再试试。</div>`;
+        return;
+      }
+
+      list.innerHTML = "";
+      visible.forEach(course => {
+        const selected = state.selected.has(course.id);
+        const card = document.createElement("article");
+        card.className = "course";
+        card.innerHTML = `
+          <div class="course-head">
+            <h3>${course.name}</h3>
+            <span class="tag">${course.interest}</span>
+          </div>
+          <div class="meta">
+            <div><strong>时间</strong> 周${course.weekday} ${course.time}</div>
+            <div><strong>教师</strong> ${course.teacher}</div>
+            <div><strong>教室</strong> ${course.classroom}</div>
+          </div>
+          <div class="actions">
+            <button class="add ${selected ? "added" : ""}">
+              ${selected ? "已加入，点击移除" : "加入我的清单"}
+            </button>
+          </div>
+        `;
+        card.querySelector(".add").addEventListener("click", () => {
+          if (selected) state.selected.delete(course.id);
+          else state.selected.add(course.id);
+          state.showResult = false;
+          render();
+        });
+        list.appendChild(card);
+      });
+    }
+
+    function renderPlan() {
+      const selected = sortCourses(getSelectedCourses());
+      $("#selectedCount").textContent = selected.length;
+      $("#planNotice").textContent = selected.length
+        ? "下面是你当前的选课组合。若有时间冲突，课程卡片会出现红色提醒。"
+        : "还没有选择课程。你可以从中间的课程卡片加入清单。";
+
+      const selectedList = $("#selectedList");
+      selectedList.innerHTML = "";
+      selected.forEach(course => {
+        const conflict = hasConflict(course, selected);
+        const item = document.createElement("div");
+        item.className = "selected";
+        item.innerHTML = `
+          <strong>${course.name}</strong>
+          <span>周${course.weekday} ${course.time} · ${course.classroom}</span>
+          <span>${course.teacher} · ${course.interest}</span>
+          ${conflict ? `<span class="conflict-note">与「${conflict.name}」冲突</span>` : ""}
+          <button class="remove">移除</button>
+        `;
+        item.querySelector(".remove").addEventListener("click", () => {
+          state.selected.delete(course.id);
+          state.showResult = false;
+          render();
+        });
+        selectedList.appendChild(item);
+      });
+
+      const resultBox = $("#resultBox");
+      resultBox.textContent = buildResultText(selected);
+      resultBox.className = `result-box ${state.showResult ? "show" : ""}`;
+
+      const weekPlan = $("#weekPlan");
+      weekPlan.innerHTML = "";
+      weekdays.forEach(day => {
+        const dayCourses = selected.filter(course => course.weekday === day);
+        const dayNode = document.createElement("div");
+        dayNode.className = "day";
+        dayNode.innerHTML = `
+          <div class="day-title">周${day}<span>${dayCourses.length} 门</span></div>
+          ${dayCourses.length ? dayCourses.map(course => `
+            <div class="slot">
+              <div class="slot-row">
+                <div>
+                  <b>${course.time} ${course.name}</b>
+                  <em>${course.classroom} · ${course.interest}</em>
+                </div>
+                <button class="slot-remove" data-id="${course.id}">删除</button>
+              </div>
+            </div>
+          `).join("") : `<div class="slot"><em>暂未选择</em></div>`}
+        `;
+        dayNode.querySelectorAll(".slot-remove").forEach(button => {
+          button.addEventListener("click", () => {
+            state.selected.delete(Number(button.dataset.id));
+            state.showResult = false;
+            render();
+          });
+        });
+        weekPlan.appendChild(dayNode);
+      });
+    }
+
+    function buildResultText(selected = sortCourses(getSelectedCourses())) {
+      if (!selected.length) return "我的选课清单：\n暂未选择课程。";
+      const conflictPairs = new Map();
+      selected.forEach(course => {
+        const conflict = hasConflict(course, selected);
+        if (!conflict) return;
+        const key = [course.id, conflict.id].sort((a, b) => a - b).join("-");
+        if (!conflictPairs.has(key)) conflictPairs.set(key, `${course.name} 与 ${conflict.name} 时间冲突`);
+      });
+      const conflictLines = [...conflictPairs.values()];
+      const lines = selected.map((course, index) => (
+        `${index + 1}. ${course.name}：周${course.weekday} ${course.time}，${course.classroom}，教师：${course.teacher}`
+      ));
+      return [
+        "我的选课清单：",
+        ...lines,
+        "",
+        conflictLines.length ? "时间提醒：\n" + conflictLines.join("\n") : "当前无时间冲突。"
+      ].join("\n");
+    }
+
+    function renderFilters() {
+      makeChoices($("#weekdayFilters"), weekdays.map(day => ({ key: day, label: `周${day}` })), state.weekdays, key => toggle(state.weekdays, key));
+      makeChoices($("#periodFilters"), periods, state.periods, key => toggle(state.periods, key));
+      makeChoices($("#categoryFilters"), interestCategories.map(category => category.key), state.categories, key => {
+        if (state.categories.has(key)) state.categories.delete(key);
+        else state.categories.add(key);
+        [...state.interests].forEach(interest => {
+          if (state.categories.size && !state.categories.has(categoryByInterest.get(interest))) {
+            state.interests.delete(interest);
+          }
+        });
+        render();
+      });
+      makeChoices($("#interestFilters"), visibleInterests(), state.interests, key => toggle(state.interests, key));
+    }
+
+    function render() {
+      renderFilters();
+      renderCourses();
+      renderPlan();
+      $("#courseTotal").textContent = courses.length;
+    }
+
+    $("#keyword").addEventListener("input", event => {
+      state.keyword = event.target.value.trim();
+      renderCourses();
+    });
+
+    $("#resetFilters").addEventListener("click", () => {
+      state.keyword = "";
+      state.weekdays.clear();
+      state.periods.clear();
+      state.categories.clear();
+      state.interests.clear();
+      $("#keyword").value = "";
+      render();
+    });
+
+    $("#clearPlan").addEventListener("click", () => {
+      state.selected.clear();
+      state.showResult = false;
+      render();
+    });
+
+    $("#generateResult").addEventListener("click", () => {
+      state.showResult = true;
+      renderPlan();
+    });
+
+    $("#copyResult").addEventListener("click", async () => {
+      const text = buildResultText();
+      state.showResult = true;
+      renderPlan();
+      try {
+        await navigator.clipboard.writeText(text);
+        $("#copyResult").textContent = "已复制";
+        setTimeout(() => { $("#copyResult").textContent = "复制文字"; }, 1200);
+      } catch (error) {
+        $("#copyResult").textContent = "请手动复制";
+        setTimeout(() => { $("#copyResult").textContent = "复制文字"; }, 1400);
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
