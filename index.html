@@ -657,13 +657,6 @@
       font-size: 18px;
     }
 
-    .plan-head-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      white-space: nowrap;
-    }
-
     .clear {
       color: var(--muted);
       background: transparent;
@@ -671,11 +664,14 @@
       font-size: 13px;
     }
 
-    .home-link {
+    .home-btn {
+      width: 100%;
+      min-height: 48px;
+      margin-top: 8px;
+      border-radius: 8px;
+      background: #eef2eb;
       color: var(--green);
-      background: transparent;
-      padding: 6px 0;
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 800;
     }
 
@@ -1080,10 +1076,7 @@
         <aside class="panel plan plan-full hidden" id="planPanel">
           <div class="plan-head">
             <h2>我的课表</h2>
-            <div class="plan-head-actions">
-              <button class="home-link" id="backHomeFromPlan" type="button">返回首页</button>
-              <button class="clear" id="clearPlan" type="button">全部移除</button>
-            </div>
+            <button class="clear" id="clearPlan" type="button">全部移除</button>
           </div>
           <p class="notice" id="planNotice">还没有选择课程。完成任一路径后，课程会自动加入这里。</p>
           <div class="selected-list" id="selectedList"></div>
@@ -1091,6 +1084,7 @@
             <button class="result-btn" id="generateResult">生成结果</button>
             <button class="result-btn secondary" id="copyResult">复制文字</button>
           </div>
+          <button class="home-btn" id="backHomeFromPlan" type="button">⌂ 返回首页继续选课</button>
           <div class="result-box" id="resultBox"></div>
           <div class="week hidden" id="weekPlan"></div>
         </aside>
