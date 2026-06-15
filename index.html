@@ -734,57 +734,13 @@
       margin-top: 14px;
     }
 
-    .result-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin: 0 0 10px;
-    }
-
     .result-btn {
       min-height: 40px;
+      width: 100%;
       border-radius: 8px;
       background: var(--green);
       color: #fff;
       font-weight: 800;
-    }
-
-    .result-btn.secondary {
-      background: #eef2eb;
-      color: var(--ink);
-    }
-
-    .result-box {
-      display: none;
-      margin: 0 0 16px;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid var(--line);
-      background: #fbfcfa;
-      white-space: pre-wrap;
-      color: var(--ink);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .result-box.show {
-      display: grid;
-      gap: 10px;
-    }
-
-    .result-image {
-      width: 100%;
-      border-radius: 8px;
-      border: 1px solid var(--line);
-      background: #fff;
-      display: block;
-    }
-
-    .result-note {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.55;
     }
 
     .week {
@@ -1114,11 +1070,7 @@
             <button class="home-btn" id="backHomeFromPlan" type="button">返回首页</button>
           </div>
           <div class="result-section">
-            <div class="result-actions">
-              <button class="result-btn" id="generateResult">生成照片</button>
-              <button class="result-btn secondary" id="copyResult">复制文字</button>
-            </div>
-            <div class="result-box" id="resultBox"></div>
+            <button class="result-btn" id="copyResult">复制文字</button>
           </div>
           <div class="week hidden" id="weekPlan"></div>
         </aside>
@@ -1287,8 +1239,7 @@
       interest: "",
       teacher: "",
       chosenCourseId: null,
-      selected: new Set(),
-      showResult: false
+      selected: new Set()
     };
 
     const $ = selector => document.querySelector(selector);
@@ -1416,7 +1367,6 @@
       const course = selectedCourse();
       if (!course) return;
       state.selected.add(course.id);
-      state.showResult = false;
       state.page = "plan";
       window.scrollTo({ top: 0, behavior: "smooth" });
       render();
@@ -1633,9 +1583,9 @@
         stepLabel: "我的课表",
         title: course ? `已加入：${course.name}` : "我的课表",
         hint: course
-          ? "课程已经自动加入右侧课表。你可以生成照片、复制文字，也可以返回上一页换一门课。"
+          ? "课程已经自动加入右侧课表。你可以复制文字，也可以返回上一页换一门课。"
           : "右侧是当前课表。你可以继续回到首页选择新的选课方式。",
-        body: `<div class="notice">课表照片生成和下载功能保留在右侧，方便保存后发送给家人或老师。</div>`,
+        body: `<div class="notice">点击右侧“复制文字”，即可复制当前课表，方便发送给家人或老师。</div>`,
         nextText: "回到首页"
       });
     }
@@ -1669,25 +1619,10 @@
         `;
         item.querySelector(".remove").addEventListener("click", () => {
           state.selected.delete(course.id);
-          state.showResult = false;
           render();
         });
         selectedList.appendChild(item);
       });
-
-      const resultBox = $("#resultBox");
-      resultBox.className = `result-box ${state.showResult ? "show" : ""}`;
-      resultBox.innerHTML = "";
-      if (state.showResult) {
-        const image = document.createElement("img");
-        image.className = "result-image";
-        image.alt = "我的课表照片";
-        image.src = buildResultImageDataUrl(selected);
-        const note = document.createElement("p");
-        note.className = "result-note";
-        note.textContent = selected.length ? "已生成课表照片。也可以点“复制文字”，再发给家人或老师。" : "暂未选择课程，请先选课后再生成照片。";
-        resultBox.append(image, note);
-      }
 
       const weekPlan = $("#weekPlan");
       weekPlan.innerHTML = "";
@@ -1712,7 +1647,6 @@
         dayNode.querySelectorAll(".slot-remove").forEach(button => {
           button.addEventListener("click", () => {
             state.selected.delete(Number(button.dataset.id));
-            state.showResult = false;
             render();
           });
         });
@@ -1741,119 +1675,6 @@
         "",
         conflictLines.length ? "时间提醒：\n" + conflictLines.join("\n") : "当前无时间冲突。"
       ].join("\n");
-    }
-
-    function wrapCanvasText(ctx, text, maxWidth) {
-      const lines = [];
-      let line = "";
-      for (const char of text) {
-        const testLine = line + char;
-        if (ctx.measureText(testLine).width > maxWidth && line) {
-          lines.push(line);
-          line = char;
-        } else {
-          line = testLine;
-        }
-      }
-      if (line) lines.push(line);
-      return lines;
-    }
-
-    function buildResultImageDataUrl(selected = sortCourses(getSelectedCourses())) {
-      const width = 1080;
-      const padding = 64;
-      const cardGap = 28;
-      const cardPadding = 32;
-      const footerHeight = 116;
-      const ctxMeasure = document.createElement("canvas").getContext("2d");
-      ctxMeasure.font = "800 44px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-      const courseBlocks = selected.map(course => {
-        const nameLines = wrapCanvasText(ctxMeasure, course.name, width - padding * 2 - cardPadding * 2 - 190);
-        return { course, nameLines, height: 140 + nameLines.length * 52 };
-      });
-      const height = Math.max(
-        820,
-        250 + courseBlocks.reduce((sum, block) => sum + block.height + cardGap, 0) + footerHeight
-      );
-      const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext("2d");
-
-      ctx.fillStyle = "#fbfcfa";
-      ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = "#4f8f45";
-      ctx.fillRect(0, 0, width, 170);
-      ctx.fillStyle = "#fff";
-      ctx.font = "800 56px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-      ctx.fillText("我的课表", padding, 82);
-      ctx.font = "600 34px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-      ctx.fillText("乐龄学院 2026年秋季学期", padding, 134);
-
-      ctx.fillStyle = "#223024";
-      ctx.font = "800 40px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-      ctx.fillText(`共 ${selected.length} 门课`, padding, 226);
-      ctx.fillStyle = "#4f8f45";
-      ctx.fillText(`学费合计：${totalTuition(selected)}元`, width - padding - 360, 226);
-
-      let y = 266;
-      if (!selected.length) {
-        ctx.fillStyle = "#6b746a";
-        ctx.font = "600 40px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-        ctx.fillText("暂未选择课程", padding, y + 60);
-      }
-
-      courseBlocks.forEach((block, index) => {
-        const { course, nameLines, height: cardHeight } = block;
-        ctx.fillStyle = "#fff";
-        ctx.strokeStyle = "#d9e0d4";
-        ctx.lineWidth = 2;
-        const x = padding;
-        const cardWidth = width - padding * 2;
-        ctx.beginPath();
-        ctx.roundRect(x, y, cardWidth, cardHeight, 18);
-        ctx.fill();
-        ctx.stroke();
-
-        ctx.fillStyle = "#4f8f45";
-        ctx.font = "800 34px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-        ctx.fillText(String(index + 1).padStart(2, "0"), x + cardPadding, y + 60);
-
-        ctx.fillStyle = "#223024";
-        ctx.font = "800 44px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-        let textY = y + 60;
-        nameLines.forEach(line => {
-          ctx.fillText(line, x + cardPadding + 78, textY);
-          textY += 52;
-        });
-
-        ctx.fillStyle = "#6b746a";
-        ctx.font = "600 34px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-        ctx.fillText(`周${course.weekday} ${course.time} · ${course.classroom}`, x + cardPadding + 78, textY + 14);
-        ctx.fillText(`教师：${course.teacher}`, x + cardPadding + 78, textY + 62);
-
-        ctx.fillStyle = "#8a5a24";
-        ctx.font = "800 38px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-        ctx.fillText(`学费 ${tuitionText(course)}`, x + cardWidth - cardPadding - 190, y + 62);
-
-        y += cardHeight + cardGap;
-      });
-
-      const conflictPairs = new Map();
-      selected.forEach(course => {
-        const conflict = hasConflict(course, selected);
-        if (!conflict) return;
-        const key = [course.id, conflict.id].sort((a, b) => a - b).join("-");
-        if (!conflictPairs.has(key)) conflictPairs.set(key, `${course.name} 与 ${conflict.name} 时间冲突`);
-      });
-      ctx.fillStyle = conflictPairs.size ? "#a33b2f" : "#6b746a";
-      ctx.font = "700 32px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-      const reminder = conflictPairs.size ? `时间提醒：${[...conflictPairs.values()].join("；")}` : "时间提醒：当前无时间冲突";
-      wrapCanvasText(ctx, reminder, width - padding * 2).forEach((line, index) => {
-        ctx.fillText(line, padding, height - 82 + index * 40);
-      });
-
-      return canvas.toDataURL("image/png");
     }
 
     function renderStartPage() {
@@ -1978,7 +1799,6 @@
 
     $("#clearPlan").addEventListener("click", () => {
       state.selected.clear();
-      state.showResult = false;
       render();
     });
 
@@ -1989,15 +1809,8 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
-    $("#generateResult").addEventListener("click", () => {
-      state.showResult = true;
-      renderPlan();
-    });
-
     $("#copyResult").addEventListener("click", async () => {
       const text = buildResultText();
-      state.showResult = true;
-      renderPlan();
       try {
         await navigator.clipboard.writeText(text);
         $("#copyResult").textContent = "已复制";
