@@ -1116,7 +1116,7 @@
           <div class="result-section">
             <div class="result-actions">
               <button class="result-btn" id="generateResult">生成照片</button>
-              <button class="result-btn secondary" id="downloadResult">下载到相册</button>
+              <button class="result-btn secondary" id="copyResult">复制文字</button>
             </div>
             <div class="result-box" id="resultBox"></div>
           </div>
@@ -1633,7 +1633,7 @@
         stepLabel: "我的课表",
         title: course ? `已加入：${course.name}` : "我的课表",
         hint: course
-          ? "课程已经自动加入右侧课表。你可以生成照片、下载到相册，也可以返回上一页换一门课。"
+          ? "课程已经自动加入右侧课表。你可以生成照片、复制文字，也可以返回上一页换一门课。"
           : "右侧是当前课表。你可以继续回到首页选择新的选课方式。",
         body: `<div class="notice">课表照片生成和下载功能保留在右侧，方便保存后发送给家人或老师。</div>`,
         nextText: "回到首页"
@@ -1685,7 +1685,7 @@
         image.src = buildResultImageDataUrl(selected);
         const note = document.createElement("p");
         note.className = "result-note";
-        note.textContent = selected.length ? "已生成课表照片，点“下载到相册”可保存到本地。" : "暂未选择课程，请先选课后再生成照片。";
+        note.textContent = selected.length ? "已生成课表照片。也可以点“复制文字”，再发给家人或老师。" : "暂未选择课程，请先选课后再生成照片。";
         resultBox.append(image, note);
       }
 
@@ -1762,19 +1762,18 @@
     function buildResultImageDataUrl(selected = sortCourses(getSelectedCourses())) {
       const width = 1080;
       const padding = 64;
-      const cardGap = 22;
-      const cardPadding = 28;
-      const lineHeight = 42;
-      const footerHeight = 96;
+      const cardGap = 28;
+      const cardPadding = 32;
+      const footerHeight = 116;
       const ctxMeasure = document.createElement("canvas").getContext("2d");
-      ctxMeasure.font = "700 34px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+      ctxMeasure.font = "800 44px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
       const courseBlocks = selected.map(course => {
-        const nameLines = wrapCanvasText(ctxMeasure, course.name, width - padding * 2 - cardPadding * 2 - 160);
-        return { course, nameLines, height: 104 + nameLines.length * 42 };
+        const nameLines = wrapCanvasText(ctxMeasure, course.name, width - padding * 2 - cardPadding * 2 - 190);
+        return { course, nameLines, height: 140 + nameLines.length * 52 };
       });
       const height = Math.max(
-        720,
-        230 + courseBlocks.reduce((sum, block) => sum + block.height + cardGap, 0) + footerHeight
+        820,
+        250 + courseBlocks.reduce((sum, block) => sum + block.height + cardGap, 0) + footerHeight
       );
       const canvas = document.createElement("canvas");
       canvas.width = width;
@@ -1786,21 +1785,21 @@
       ctx.fillStyle = "#4f8f45";
       ctx.fillRect(0, 0, width, 170);
       ctx.fillStyle = "#fff";
-      ctx.font = "800 48px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+      ctx.font = "800 56px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
       ctx.fillText("我的课表", padding, 82);
-      ctx.font = "500 28px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-      ctx.fillText("乐龄学院 2026年秋季学期", padding, 128);
+      ctx.font = "600 34px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+      ctx.fillText("乐龄学院 2026年秋季学期", padding, 134);
 
       ctx.fillStyle = "#223024";
-      ctx.font = "800 34px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-      ctx.fillText(`共 ${selected.length} 门课`, padding, 220);
+      ctx.font = "800 40px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+      ctx.fillText(`共 ${selected.length} 门课`, padding, 226);
       ctx.fillStyle = "#4f8f45";
-      ctx.fillText(`学费合计：${totalTuition(selected)}元`, width - padding - 300, 220);
+      ctx.fillText(`学费合计：${totalTuition(selected)}元`, width - padding - 360, 226);
 
-      let y = 252;
+      let y = 266;
       if (!selected.length) {
         ctx.fillStyle = "#6b746a";
-        ctx.font = "600 34px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+        ctx.font = "600 40px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
         ctx.fillText("暂未选择课程", padding, y + 60);
       }
 
@@ -1817,25 +1816,25 @@
         ctx.stroke();
 
         ctx.fillStyle = "#4f8f45";
-        ctx.font = "800 28px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-        ctx.fillText(String(index + 1).padStart(2, "0"), x + cardPadding, y + 48);
+        ctx.font = "800 34px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+        ctx.fillText(String(index + 1).padStart(2, "0"), x + cardPadding, y + 60);
 
         ctx.fillStyle = "#223024";
-        ctx.font = "800 34px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-        let textY = y + 48;
+        ctx.font = "800 44px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+        let textY = y + 60;
         nameLines.forEach(line => {
-          ctx.fillText(line, x + cardPadding + 72, textY);
-          textY += 42;
+          ctx.fillText(line, x + cardPadding + 78, textY);
+          textY += 52;
         });
 
         ctx.fillStyle = "#6b746a";
-        ctx.font = "500 27px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-        ctx.fillText(`周${course.weekday} ${course.time} · ${course.classroom}`, x + cardPadding + 72, textY + 8);
-        ctx.fillText(`教师：${course.teacher}`, x + cardPadding + 72, textY + 48);
+        ctx.font = "600 34px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+        ctx.fillText(`周${course.weekday} ${course.time} · ${course.classroom}`, x + cardPadding + 78, textY + 14);
+        ctx.fillText(`教师：${course.teacher}`, x + cardPadding + 78, textY + 62);
 
         ctx.fillStyle = "#8a5a24";
-        ctx.font = "800 32px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-        ctx.fillText(`学费 ${tuitionText(course)}`, x + cardWidth - cardPadding - 160, y + 54);
+        ctx.font = "800 38px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+        ctx.fillText(`学费 ${tuitionText(course)}`, x + cardWidth - cardPadding - 190, y + 62);
 
         y += cardHeight + cardGap;
       });
@@ -1848,10 +1847,10 @@
         if (!conflictPairs.has(key)) conflictPairs.set(key, `${course.name} 与 ${conflict.name} 时间冲突`);
       });
       ctx.fillStyle = conflictPairs.size ? "#a33b2f" : "#6b746a";
-      ctx.font = "600 26px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+      ctx.font = "700 32px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
       const reminder = conflictPairs.size ? `时间提醒：${[...conflictPairs.values()].join("；")}` : "时间提醒：当前无时间冲突";
       wrapCanvasText(ctx, reminder, width - padding * 2).forEach((line, index) => {
-        ctx.fillText(line, padding, height - 70 + index * 32);
+        ctx.fillText(line, padding, height - 82 + index * 40);
       });
 
       return canvas.toDataURL("image/png");
@@ -1995,19 +1994,18 @@
       renderPlan();
     });
 
-    $("#downloadResult").addEventListener("click", () => {
+    $("#copyResult").addEventListener("click", async () => {
+      const text = buildResultText();
       state.showResult = true;
       renderPlan();
-      const image = $("#resultBox img");
-      if (!image) return;
-      const link = document.createElement("a");
-      link.href = image.src;
-      link.download = `我的课表-${new Date().toISOString().slice(0, 10)}.png`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      $("#downloadResult").textContent = "已下载";
-      setTimeout(() => { $("#downloadResult").textContent = "下载到相册"; }, 1400);
+      try {
+        await navigator.clipboard.writeText(text);
+        $("#copyResult").textContent = "已复制";
+        setTimeout(() => { $("#copyResult").textContent = "复制文字"; }, 1200);
+      } catch (error) {
+        $("#copyResult").textContent = "请手动复制";
+        setTimeout(() => { $("#copyResult").textContent = "复制文字"; }, 1400);
+      }
     });
 
     render();
